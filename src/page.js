@@ -14,6 +14,7 @@
   const SAVE_INTERVAL_MS = 5000;
   const VERIFY_DELAY_MS = 1200;
   const TOAST_MS = 6000;
+  const NEAR_S = 10;
 
   // ---------- bridge ----------
   let nextRid = 1;
@@ -77,7 +78,8 @@
     send("get", id).then((saved) => {
       if (cur !== s) return;
       const target = L.resumeTarget(saved, p.getDuration(), explicit);
-      if (target === null) { s.phase = "active"; return; }
+      // Already there (miniplayer expanded, mid-roll ad ended): don't jump or announce.
+      if (target === null || Math.abs(p.getCurrentTime() - target) < NEAR_S) { s.phase = "active"; return; }
       seek(p, target);
       showToast(p, target, s);
       // YouTube's own start-up seek can land after ours; check once and redo.
@@ -105,11 +107,17 @@
   document.addEventListener("pause", (e) => {
     if (cur && e.target instanceof HTMLVideoElement && mainPlayerFor(e.target) === cur.player) save(true);
   }, true);
-  document.addEventListener("ended", (e) => {
-    if (cur && e.target instanceof HTMLVideoElement && mainPlayerFor(e.target) === cur.player) save(true);
-  }, true);
+  // A seek states where the user wants to be, even if the video then stalls buffering
+  // (no timeupdate follows), so save it right away. getCurrentTime() already returns the target.
+  for (const type of ["ended", "seeking"]) {
+    document.addEventListener(type, (e) => {
+      if (cur && e.target instanceof HTMLVideoElement && mainPlayerFor(e.target) === cur.player) save(true);
+    }, true);
+  }
   // Fires while the player still shows the old video: last chance to save it.
-  document.addEventListener("yt-navigate-start", () => save(true));
+  // Then end the session, so returning to the same video (back button, playlist)
+  // is treated as a fresh open even if no other video played in between.
+  document.addEventListener("yt-navigate-start", () => { save(true); cur = null; });
   document.addEventListener("visibilitychange", () => { if (document.hidden) save(true); });
   window.addEventListener("pagehide", () => save(true));
 

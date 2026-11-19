@@ -24,6 +24,7 @@ Konumlar yalnızca bu tarayıcının `storage.local` alanında tutulur ve dışa
     npm test            # mantık testleri (Node)
     npx web-ext lint
     npx web-ext run --start-url https://www.youtube.com
+    FIREFOX_BIN=/path/to/firefox npm run e2e   # gerçek YouTube üzerinde 14 senaryo
 
 Kalıcı kurulum için önce AMO'da listelenmeyen (unlisted) imza alınır.
 Bunun için gereken anahtarlar addons.mozilla.org > Developer Hub > Manage API Keys sayfasından alınır.

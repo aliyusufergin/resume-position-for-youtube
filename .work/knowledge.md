@@ -32,7 +32,16 @@
 - Previews polluting saved positions.
 - Races between tabs.
 
+## Learned in the browser (2026-11-19, Firefox 160)
+- After a seek the video can stall in buffering (state 3) and send no `timeupdate`, and the async save in `pagehide` doesn't finish before reload. So save on `seeking` too; `getCurrentTime()` already returns the seek target.
+- If the video in between never plays (stuck on an ad), the same video ID comes back and the session looks unchanged. A 0 s position then deletes the record. Fix: on `yt-navigate-start`, save and then `cur = null`.
+- Expanding the miniplayer also counts as navigation, so don't seek and don't show the toast when within 10 s of the saved position.
+- Hover previews play in `#inline-preview-player` (`isInline() === true`); `#movie_player` stays separate.
+- In headless Firefox, ads don't play (they stay stuck), so the ad→content transition can't be checked automatically.
+
 ## How to check a change works
+`npm test` (logic), `npx web-ext lint`, then `FIREFOX_BIN=... npm run e2e` (14 scenarios on real YouTube; it needs network, and YouTube's recommendations change, so the results can vary).
+
 Use a real Firefox (`web-ext run`) and cover these scenarios:
 - resume after reload
 - resume after SPA navigation from the home page and from recommendations

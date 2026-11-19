@@ -26,9 +26,12 @@ Konumlar yalnızca bu tarayıcının `storage.local` alanında tutulur ve dışa
     npx web-ext run --start-url https://www.youtube.com
     FIREFOX_BIN=/path/to/firefox npm run e2e   # gerçek YouTube üzerinde 14 senaryo
 
-Kalıcı kurulum için önce AMO'da listelenmeyen (unlisted) imza alınır.
+Mağaza sayfası: https://addons.mozilla.org/firefox/addon/resume-position-for-youtube/
+
+Yeni sürüm yayınlamak için listelenen (listed) kanala gönderilir.
 Bunun için gereken anahtarlar addons.mozilla.org > Developer Hub > Manage API Keys sayfasından alınır.
 
     WEB_EXT_API_KEY=... WEB_EXT_API_SECRET=... npm run sign
 
-Her imzalamadan önce `manifest.json` içindeki `version` artırılmalı.
+Her imzalamadan önce `manifest.json` içindeki `version` artırılmalı. Mağaza metinleri `amo/metadata.json` dosyasında
+(`--amo-metadata amo/metadata.json` ile gönderilir). Ekran görüntüsü yüklemek için: `node amo/upload-preview.mjs amo/screenshot-1.png "caption"`.

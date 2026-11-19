@@ -51,3 +51,9 @@ Use a real Firefox (`web-ext run`) and cover these scenarios:
 - hovering a thumbnail, which must not save anything
 - a playlist
 - the miniplayer
+
+## AMO (2026-11-20)
+- Add-on is listed: slug `resume-position-for-youtube`, guid `@yt-resume-local`. 1.0.0 was unlisted; listed releases start at 1.0.1.
+- `web-ext sign` approval for a listed submission can take longer than its 15 min wait. The timeout isn't an error; the submission is still in the queue.
+- web-ext cannot upload screenshots. Use `amo/upload-preview.mjs` (AMO v5 API with a JWT). Captions go in a separate JSON PATCH after the upload.
+- An add-on first created as unlisted gets a random-hex slug. Fix it with a `slug` PATCH.

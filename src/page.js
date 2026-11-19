@@ -14,6 +14,13 @@
   const SAVE_INTERVAL_MS = 5000;
   const VERIFY_DELAY_MS = 1200;
   const TOAST_MS = 6000;
+
+  // UI text follows the browser language (the page world has no i18n API).
+  const STRINGS = {
+    en: { resumed: "Resumed at ", restart: "Start over" },
+    tr: { resumed: "Kaldığın yerden devam: ", restart: "Baştan başlat" },
+  };
+  const T = STRINGS[(navigator.language || "en").slice(0, 2).toLowerCase()] || STRINGS.en;
   const NEAR_S = 10;
 
   // ---------- bridge ----------
@@ -137,10 +144,10 @@
       transition: "opacity .3s", opacity: "1",
     });
     const label = document.createElement("span");
-    label.textContent = "Kaldığın yerden devam: " + L.formatTime(target);
+    label.textContent = T.resumed + L.formatTime(target);
     const btn = document.createElement("button");
     btn.type = "button";
-    btn.textContent = "Baştan başlat";
+    btn.textContent = T.restart;
     Object.assign(btn.style, {
       background: "none", border: "1px solid rgba(255,255,255,.6)", borderRadius: "4px",
       color: "#fff", font: "inherit", padding: "4px 8px", cursor: "pointer",

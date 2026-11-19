@@ -1,0 +1,12 @@
+{
+  "name": "youtube-resume",
+  "private": true,
+  "scripts": {
+    "test": "node --test test/*.test.js",
+    "lint": "web-ext lint --ignore-files test package.json package-lock.json CLAUDE.md",
+    "start": "web-ext run --start-url https://www.youtube.com --ignore-files test package.json package-lock.json CLAUDE.md",
+    "build": "web-ext build --overwrite-dest --ignore-files test package.json package-lock.json CLAUDE.md",
+    "sign": "web-ext sign --channel=unlisted --ignore-files test package.json package-lock.json CLAUDE.md"
+  },
+  "devDependencies": {}
+}

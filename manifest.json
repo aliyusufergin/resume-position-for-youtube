@@ -1,0 +1,29 @@
+{
+  "manifest_version": 3,
+  "name": "Resume Position for YouTube",
+  "version": "1.0.0",
+  "description": "Kaldığın yerden devam: YouTube videolarının konumunu yalnızca bu tarayıcıda saklar, izleme geçmişi gerektirmez.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "@yt-resume-local",
+      "strict_min_version": "140.0",
+      "data_collection_permissions": { "required": ["none"] }
+    }
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "incognito": "not_allowed",
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["src/logic.js", "src/bridge.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["https://www.youtube.com/*"],
+      "js": ["src/logic.js", "src/page.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
+    }
+  ]
+}

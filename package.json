@@ -3,11 +3,11 @@
   "private": true,
   "scripts": {
     "test": "node --test test/*.test.js",
-    "lint": "web-ext lint --ignore-files test package.json package-lock.json CLAUDE.md",
-    "start": "web-ext run --start-url https://www.youtube.com --ignore-files test package.json package-lock.json CLAUDE.md",
+    "lint": "web-ext lint --ignore-files test package.json package-lock.json CLAUDE.md README.md",
+    "start": "web-ext run --start-url https://www.youtube.com --ignore-files test package.json package-lock.json CLAUDE.md README.md",
     "e2e": "node test/e2e/scenarios.mjs",
-    "build": "web-ext build --overwrite-dest --ignore-files test package.json package-lock.json CLAUDE.md",
-    "sign": "web-ext sign --channel=unlisted --ignore-files test package.json package-lock.json CLAUDE.md"
+    "build": "web-ext build --overwrite-dest --ignore-files test package.json package-lock.json CLAUDE.md README.md",
+    "sign": "web-ext sign --channel=unlisted --ignore-files test package.json package-lock.json CLAUDE.md README.md"
   },
   "devDependencies": { "puppeteer-core": "^24.0.0" }
 }

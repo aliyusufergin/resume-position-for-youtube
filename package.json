@@ -9,5 +9,8 @@
     "build": "web-ext build --overwrite-dest --ignore-files test package.json package-lock.json CLAUDE.md README.md amo LICENSE icons/icon.svg",
     "sign": "web-ext sign --channel=listed --ignore-files test package.json package-lock.json CLAUDE.md README.md amo LICENSE icons/icon.svg"
   },
-  "devDependencies": { "puppeteer-core": "^24.0.0" }
+  "devDependencies": {
+    "puppeteer-core": "^24.0.0",
+    "web-ext": "^8.10.0"
+  }
 }

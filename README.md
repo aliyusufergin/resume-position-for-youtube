@@ -8,7 +8,7 @@ Konumlar yalnızca bu tarayıcının `storage.local` alanında tutulur ve dışa
 - Videoyu tekrar açınca kaldığın yerden başlar. Ekrana "Kaldığın yerden devam: 12:34" bildirimi gelir ve "Baştan başlat" düğmesiyle baştan izleyebilirsin.
 - Şu durumlarda kaldığın yerden devam edilmez:
   - Linkte `t=`, `start=` veya `#t=` varsa; o zaman linkteki süre kullanılır.
-  - Video bitmişse (son %5'i, 10–30 sn arası) ya da ilk 10 saniyede kapatılmışsa video baştan başlar.
+  - Video bitmişse (son %5'i, 10–30 sn arası) "izlendi" olarak işaretlenir ve baştan başlar. İlk 10 saniyede kapatılan videolar hiç kaydedilmez.
 - Kapsam dışı olanlar:
   - 90 saniyeden kısa videolar
   - canlı yayınlar
@@ -16,6 +16,8 @@ Konumlar yalnızca bu tarayıcının `storage.local` alanında tutulur ve dışa
   - fareyle üzerine gelince oynayan önizlemeler
   - YouTube Music
   - gömülü videolar
+- Arama sonuçlarında, önerilerde ve kanal sayfalarında küçük resimlerin altında kehribar renkli bir ilerleme çubuğu gösterilir. Bitirdiğin videolarda çubuk tam doludur ve "✓ İzlendi" etiketi çıkar.
+- İzlendi olarak işaretli bir video tekrar açılınca baştan başlar. İlk birkaç saniyede kapatırsan işaret korunur. 10 saniyeyi geçersen video yeniden "yarım" sayılır.
 - Reklam oynarken konum kaydedilmez ve ileri sarma yapılmaz.
 - Eklenti gizli pencerelerde çalışmaz.
 - 90 gündür açılmayan videoların kayıtları silinir.
@@ -24,7 +26,7 @@ Konumlar yalnızca bu tarayıcının `storage.local` alanında tutulur ve dışa
     npm test            # mantık testleri (Node)
     npx web-ext lint
     npx web-ext run --start-url https://www.youtube.com
-    FIREFOX_BIN=/path/to/firefox npm run e2e   # gerçek YouTube üzerinde 14 senaryo
+    FIREFOX_BIN=/path/to/firefox npm run e2e   # gerçek YouTube üzerinde 17 senaryo
 
 Mağaza sayfası: https://addons.mozilla.org/firefox/addon/resume-position-for-youtube/
 

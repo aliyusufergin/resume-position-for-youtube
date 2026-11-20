@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Resume Position for YouTube",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Pick up YouTube videos where you left off, even with watch history turned off. Positions stay in your browser; nothing is sent anywhere.",
   "icons": {
     "32": "icons/icon-32.png",
@@ -34,9 +34,13 @@
       ],
       "js": [
         "src/logic.js",
-        "src/bridge.js"
+        "src/bridge.js",
+        "src/thumbs.js"
       ],
-      "run_at": "document_start"
+      "run_at": "document_start",
+      "css": [
+        "src/thumbs.css"
+      ]
     },
     {
       "matches": [

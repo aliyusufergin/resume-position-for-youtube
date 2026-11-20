@@ -5,7 +5,9 @@ const L = require("../src/logic.js");
 test("saveAction", () => {
   assert.equal(L.saveAction(120, 600), "save");
   assert.equal(L.saveAction(5, 600), "remove");          // barely started
-  assert.equal(L.saveAction(575, 600), "remove");        // last 30s (5% of 600 = 30)
+  assert.equal(L.saveAction(5, 600, true), "skip");      // reopened a watched video: keep the mark
+  assert.equal(L.saveAction(120, 600, true), "save");    // rewatching past 10s: partial again
+  assert.equal(L.saveAction(575, 600), "done");          // last 30s (5% of 600 = 30)
   assert.equal(L.saveAction(569, 600), "save");
   assert.equal(L.saveAction(30, 60), "skip");            // too short to track
   assert.equal(L.saveAction(30, Infinity), "skip");      // live / unknown
@@ -27,6 +29,18 @@ test("resumeTarget", () => {
   assert.equal(L.resumeTarget({ t: 590, d: 600 }, 600, false), null);  // finished
   assert.equal(L.resumeTarget({ t: 300, d: 600 }, NaN, false), 300);   // falls back to saved d
   assert.equal(L.resumeTarget({ t: 3, d: 600 }, 600, false), null);
+});
+
+test("watched entries never resume", () => {
+  assert.equal(L.resumeTarget({ t: 300, d: 600, done: true }, 600, false), null);
+});
+
+test("thumbState", () => {
+  assert.equal(L.thumbState(null), null);
+  assert.deepEqual(L.thumbState({ t: 590, d: 600, done: true }), { done: true });
+  assert.deepEqual(L.thumbState({ t: 150, d: 600 }), { pct: 25 });
+  assert.deepEqual(L.thumbState({ t: 1, d: 600 }), { pct: 2 });   // always visible
+  assert.equal(L.thumbState({ t: 1, d: 0 }), null);
 });
 
 test("hasExplicitTime", () => {

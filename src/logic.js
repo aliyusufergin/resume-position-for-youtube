@@ -19,16 +19,27 @@ var YTResumeLogic = (function () {
     return Number.isFinite(d) && d >= MIN_DURATION;
   }
 
-  // What to do with the current position: "save", "remove" or "skip".
-  function saveAction(t, duration) {
+  // What to do with the current position: "save", "done", "remove" or "skip".
+  // wasDone: the stored entry already says "watched"; reopening it (which starts at 0)
+  // must not wipe that mark just because the position is near the start.
+  function saveAction(t, duration, wasDone) {
     if (!validDuration(duration) || !Number.isFinite(t)) return "skip";
-    if (t < MIN_POSITION || isFinished(t, duration)) return "remove";
+    if (isFinished(t, duration)) return "done";
+    if (t < MIN_POSITION) return wasDone ? "skip" : "remove";
     return "save";
+  }
+
+  // How a thumbnail should look for a stored entry: null, {done: true} or {pct}.
+  function thumbState(entry) {
+    if (!entry || !Number.isFinite(entry.d) || entry.d <= 0) return null;
+    if (entry.done) return { done: true };
+    if (!Number.isFinite(entry.t)) return null;
+    return { pct: Math.max(2, Math.min(100, (entry.t / entry.d) * 100)) };
   }
 
   // Position to seek to on opening a video, or null.
   function resumeTarget(saved, duration, explicitTime) {
-    if (explicitTime || !saved || !Number.isFinite(saved.t)) return null;
+    if (explicitTime || !saved || saved.done || !Number.isFinite(saved.t)) return null;
     const d = validDuration(duration) ? duration : saved.d;
     if (!validDuration(d)) return null;
     if (saved.t < MIN_POSITION || isFinished(saved.t, d)) return null;
@@ -59,7 +70,7 @@ var YTResumeLogic = (function () {
     return h > 0 ? `${h}:${String(m).padStart(2, "0")}:${s}` : `${m}:${s}`;
   }
 
-  return { endMargin, isFinished, saveAction, resumeTarget, hasExplicitTime, expiredKeys, formatTime, MAX_AGE_MS };
+  return { endMargin, isFinished, saveAction, thumbState, resumeTarget, hasExplicitTime, expiredKeys, formatTime, MAX_AGE_MS };
 })();
 
 if (typeof module !== "undefined") module.exports = YTResumeLogic;

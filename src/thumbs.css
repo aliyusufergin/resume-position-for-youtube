@@ -1,0 +1,13 @@
+/* Injected through the manifest so YouTube's CSP doesn't apply. */
+.ytr-host { position: relative; }
+.ytr-thumb { position: absolute; inset: 0; pointer-events: none; z-index: 2; border-radius: inherit; overflow: hidden; }
+.ytr-bar { position: absolute; left: 0; right: 0; bottom: 0; height: 4px; background: rgba(255, 255, 255, .35); }
+.ytr-fill { height: 100%; background: #f59e0b; }
+.ytr-badge {
+  display: none; position: absolute; top: 6px; left: 6px;
+  padding: 2px 6px; border-radius: 4px;
+  background: rgba(0, 0, 0, .8); color: #fff;
+  font: 500 12px/1.4 Roboto, Arial, sans-serif;
+}
+.ytr-done .ytr-badge { display: block; }
+.ytr-done::before { content: ""; position: absolute; inset: 0; background: rgba(0, 0, 0, .35); }

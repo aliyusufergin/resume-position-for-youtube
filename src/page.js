@@ -68,8 +68,9 @@
     s.lastSave = now;
     const t = p.getCurrentTime();
     const d = p.getDuration();
-    const action = L.saveAction(t, d);
-    if (action === "save") send("set", s.id, { t, d });
+    const action = L.saveAction(t, d, s.wasDone);
+    if (action === "save") { s.wasDone = false; send("set", s.id, { t, d }); }
+    else if (action === "done") { s.wasDone = true; send("set", s.id, { t, d, done: true }); }
     else if (action === "remove") send("remove", s.id);
   }
 
@@ -84,6 +85,7 @@
     const explicit = L.hasExplicitTime(location.href, id);
     send("get", id).then((saved) => {
       if (cur !== s) return;
+      s.wasDone = !!(saved && saved.done);
       const target = L.resumeTarget(saved, p.getDuration(), explicit);
       // Already there (miniplayer expanded, mid-roll ad ended): don't jump or announce.
       if (target === null || Math.abs(p.getCurrentTime() - target) < NEAR_S) { s.phase = "active"; return; }

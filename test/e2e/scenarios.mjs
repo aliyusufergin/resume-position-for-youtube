@@ -15,6 +15,25 @@ const getSaved = (id) => page.evaluate((id) => new Promise((res) => {
   document.addEventListener("ytresume:res", h);
   document.dispatchEvent(new CustomEvent("ytresume:req", { detail: JSON.stringify({ rid, op: "get", id }) }));
 }), id);
+// Search for the test video and read our overlay on its result thumbnail.
+const thumbOf = async (id) => {
+  await page.goto("https://www.youtube.com/results?search_query=" + encodeURIComponent("Big Buck Bunny 60fps 4K Official Blender Foundation Short Film"), { waitUntil: "domcontentloaded" });
+  for (let i = 0; i < 20; i++) {
+    await sleep(1000);
+    const r = await page.evaluate((id) => {
+      const host = [...document.querySelectorAll("yt-thumbnail-view-model, a#thumbnail")].find((h) => (h.closest("a[href]")?.getAttribute("href") || "").includes("v=" + id));
+      if (!host) return null;
+      const box = host.querySelector(":scope > .ytr-thumb");
+      if (!box) return { host: true, overlay: false };
+      const fill = box.querySelector(".ytr-fill");
+      const badge = box.querySelector(".ytr-badge");
+      return { overlay: true, done: box.classList.contains("ytr-done"), badge: getComputedStyle(badge).display !== "none" && badge.textContent,
+        width: Math.round(fill.getBoundingClientRect().width / box.getBoundingClientRect().width * 100) };
+    }, id);
+    if (r && r.overlay) return r;
+    if (i === 19) return r;
+  }
+};
 const seekTo = (t) => page.evaluate((t) => document.getElementById("movie_player").seekTo(t, true), t);
 const waitPlaying = async (id) => { for (let i = 0; i < 30; i++) { const s = await state(page); if (s.id === id && s.st === 1 && !s.ad) return s; await sleep(1000); } return state(page); };
 const open = async (url, id) => { await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 }); return waitPlaying(id); };
@@ -57,12 +76,17 @@ try {
   await seekTo(300); await sleep(6500);
   const d = (await state(page)).d;
   await seekTo(d - 12); await sleep(8000);
-  check("finished video entry removed", (await getSaved(VIDEO)) === null, await getSaved(VIDEO));
+  check("finished video marked watched", (await getSaved(VIDEO))?.done === true, await getSaved(VIDEO));
   await open(W(VIDEO), VIDEO); await sleep(2500);
   s = await state(page);
   check("finished video starts from 0", s.t < 10, s);
+  await sleep(3000);
+  check("reopening keeps watched mark", (await getSaved(VIDEO))?.done === true, await getSaved(VIDEO));
+  let th = await thumbOf(VIDEO);
+  check("search thumbnail shows watched", th && th.done && th.badge, th);
 
   // 6. miniplayer: keep playing while browsing, no re-seek on expand
+  await open(W(VIDEO), VIDEO);
   await seekTo(150); await sleep(6000);
   await page.evaluate(() => { window.__toasts.length = 0; });
   await page.keyboard.press("i"); await sleep(1500);
@@ -75,7 +99,11 @@ try {
   check("miniplayer expand doesn't jump", s2.t >= s.t - 2, { before: s.t, after: s2.t, url: s2.url });
   check("miniplayer expand no toast", (await toasts()).length === 0, await toasts());
 
-  // 7. home page hover previews don't save
+  // 7. partial progress on a thumbnail
+  th = await thumbOf(VIDEO);
+  check("search thumbnail shows progress", th && !th.done && th.width > 15 && th.width < 35, th);
+
+  // 8. home page hover previews don't save
   await page.goto("https://www.youtube.com/", { waitUntil: "domcontentloaded" }); await sleep(6000);
   const hovered = [];
   const thumbs = await page.$$('ytd-rich-item-renderer a#thumbnail[href^="/watch"], yt-lockup-view-model a[href^="/watch"]');

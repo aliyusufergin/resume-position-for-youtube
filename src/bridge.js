@@ -22,9 +22,11 @@
         const r = await browser.storage.local.get(key(msg.id));
         reply(msg.rid, r[key(msg.id)] || null);
       } else if (msg.op === "set" && msg.value) {
-        const { t, d } = msg.value;
+        const { t, d, done } = msg.value;
         if (Number.isFinite(t) && Number.isFinite(d)) {
-          await browser.storage.local.set({ [key(msg.id)]: { t, d, ts: Date.now() } });
+          const entry = { t, d, ts: Date.now() };
+          if (done === true) entry.done = true;
+          await browser.storage.local.set({ [key(msg.id)]: entry });
         }
       } else if (msg.op === "remove") {
         await browser.storage.local.remove(key(msg.id));

@@ -24,6 +24,16 @@
 - `t=` in the URL wins. Caveat: when watch history is ON, YouTube adds `t=` to thumbnail links by itself.
 - YouTube's DOM changes often. Keep all selectors and event names in one module.
 
+## Thumbnails (1.1.0)
+- YouTube alternates between two layouts, even across loads of the same search:
+  - new: `a[href*="/watch?v="] yt-thumbnail-view-model`
+  - old: `ytd-thumbnail a#thumbnail`
+  Support both.
+- Skip playlist covers: they sit inside `yt-collection-thumbnail-view-model`, and the link includes `list=` and points to the first video.
+- Thumbnail elements get recycled, so state lives in `data-ytr` (state:id) and is redrawn when it changes.
+- The CSS goes in through the manifest (`content_scripts.css`), so YouTube's CSP doesn't apply.
+- Signed out with history off, YouTube's home page is empty; test thumbnails on search results.
+
 ## Known traps (from other implementations)
 - Saving the ad's time instead of the video's.
 - Miniplayer jumping back to 0.

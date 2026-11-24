@@ -116,3 +116,11 @@ test("formatTime", () => {
   assert.equal(L.formatTime(65), "1:05");
   assert.equal(L.formatTime(3725.9), "1:02:05");
 });
+
+test("entries keep a cleaned title and channel", () => {
+  const e = L.makeEntry({ t: 5, d: 600, done: true, title: "  A   title\n", author: 42, extra: 1 }, 7);
+  assert.deepEqual(e, { t: 5, d: 600, ts: 7, done: true, title: "A title" });
+  assert.equal(L.makeEntry({ t: 1, d: 2, title: "x".repeat(500) }, 1).title.length, 200);
+  const r = L.importData({ format: "yt-resume-backup", videos: { aaaaaaaaaaa: { t: 1, d: 600, ts: 5, title: "T", author: "C" } } }, {});
+  assert.deepEqual(r.set["v:aaaaaaaaaaa"], { t: 1, d: 600, ts: 5, title: "T", author: "C" });
+});

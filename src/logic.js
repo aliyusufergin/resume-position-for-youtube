@@ -101,6 +101,24 @@ var YTResumeLogic = (function () {
 
   const VIDEO_ID_RE = /^[\w-]{6,20}$/;
 
+  // Title and channel are kept only so the options page can list videos by name.
+  // Plain strings, trimmed and capped; anything else is dropped.
+  function cleanLabel(v) {
+    if (typeof v !== "string") return undefined;
+    const t = v.replace(/\s+/g, " ").trim().slice(0, 200);
+    return t || undefined;
+  }
+
+  // Stored entry from loose input: {t, d, ts, done?, title?, author?}.
+  function makeEntry(src, ts) {
+    const entry = { t: src.t, d: src.d, ts };
+    if (src.done === true) entry.done = true;
+    const title = cleanLabel(src.title), author = cleanLabel(src.author);
+    if (title) entry.title = title;
+    if (author) entry.author = author;
+    return entry;
+  }
+
   // Backup file: { format, version, exported, settings, videos: { id: {t, d, ts, done?} } }.
   function exportData(all, now) {
     const videos = {};
@@ -121,8 +139,7 @@ var YTResumeLogic = (function () {
     let added = 0, updated = 0, skipped = 0;
     for (const [id, e] of Object.entries(backup.videos)) {
       if (!VIDEO_ID_RE.test(id) || !isEntry(e)) { skipped++; continue; }
-      const entry = { t: e.t, d: e.d, ts: e.ts };
-      if (e.done === true) entry.done = true;
+      const entry = makeEntry(e, e.ts);
       const old = existing["v:" + id];
       if (isEntry(old) && old.ts >= e.ts) { skipped++; continue; }
       if (old) updated++; else added++;
@@ -150,7 +167,7 @@ var YTResumeLogic = (function () {
   }
 
   return {
-    DEFAULTS, CHOICES, VIDEO_ID_RE, normalizeSettings, endMargin, isFinished, saveAction, thumbState,
+    DEFAULTS, CHOICES, VIDEO_ID_RE, normalizeSettings, makeEntry, endMargin, isFinished, saveAction, thumbState,
     resumeTarget, hasExplicitTime, expiredKeys, exportData, importData, stats, formatTime,
   };
 })();

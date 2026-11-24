@@ -41,6 +41,10 @@
       importFailed: "That file isn't a backup from this add-on. Choose a file downloaded with Download backup.",
       privacy: "Everything stays in this browser. The add-on makes no network requests and keeps no account.",
       version: (v) => `Version ${v}`,
+      hVideos: "Videos", search: "Search by title or channel",
+      untitled: (id) => `Video ${id}`, untitledHint: "Title appears after you watch it again",
+      del: "Delete", delLabel: (t) => `Delete ${t}`, deletedOne: (t) => `Deleted “${t}”.`, undo: "Undo",
+      more: (n) => `Show ${n} more`, noMatch: "No videos match.",
       colors: ["Amber", "Red", "Blue", "Green", "Purple", "White"],
       auto: "Automatic", forever: "Forever",
       sec: (n) => `${n} s`, min: (n) => `${n} min`, days: (n) => `${n} days`, months: (n) => `${n} months`, year: "1 year",
@@ -80,6 +84,10 @@
       importFailed: "Bu dosya bu eklentinin yedeği değil. Yedeği indir ile alınmış bir dosya seç.",
       privacy: "Her şey bu tarayıcıda kalır. Eklenti hiçbir ağ isteği yapmaz, hesap tutmaz.",
       version: (v) => `Sürüm ${v}`,
+      hVideos: "Videolar", search: "Başlık ya da kanal ara",
+      untitled: (id) => `Video ${id}`, untitledHint: "Başlık, videoyu tekrar izleyince görünür",
+      del: "Sil", delLabel: (t) => `${t} kaydını sil`, deletedOne: (t) => `“${t}” silindi.`, undo: "Geri al",
+      more: (n) => `${n} video daha göster`, noMatch: "Eşleşen video yok.",
       colors: ["Kehribar", "Kırmızı", "Mavi", "Yeşil", "Mor", "Beyaz"],
       auto: "Otomatik", forever: "Süresiz",
       sec: (n) => `${n} sn`, min: (n) => `${n} dk`, days: (n) => `${n} gün`, months: (n) => `${n} ay`, year: "1 yıl",
@@ -149,7 +157,77 @@
     $("n-partial").textContent = s.partial;
     $("n-done").textContent = s.done;
     $("clear").disabled = $("export").disabled = !s.total;
+    renderVideos();
   }
+
+  // ---------- video list ----------
+  const PAGE = 50;
+  let shown = PAGE;
+  const rtf = new Intl.RelativeTimeFormat(lang, { numeric: "auto" });
+  function ago(ts) {
+    const s = (ts - Date.now()) / 1000;
+    for (const [unit, size] of [["year", 31536000], ["month", 2592000], ["day", 86400], ["hour", 3600], ["minute", 60]]) {
+      if (Math.abs(s) >= size) return rtf.format(Math.round(s / size), unit);
+    }
+    return rtf.format(0, "minute");
+  }
+  const el = (tag, cls, text) => {
+    const n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text !== undefined) n.textContent = text;
+    return n;
+  };
+
+  function videoRow(id, e) {
+    const title = e.title || T.untitled(id);
+    const li = el("li", "video");
+    const main = el("div", "v-main");
+    const a = el("a", "v-title" + (e.title ? "" : " untitled"), title);
+    a.href = "https://www.youtube.com/watch?v=" + encodeURIComponent(id);
+    a.target = "_blank";
+    a.rel = "noopener noreferrer";
+    const meta = el("div", "v-meta");
+    if (e.author) meta.append(el("span", "", e.author));
+    else if (!e.title) meta.append(el("span", "", T.untitledHint));
+    meta.append(e.done ? el("span", "v-done", "✓ " + T.watched)
+      : el("span", "num", L.formatTime(e.t) + " / " + L.formatTime(e.d)));
+    meta.append(el("span", "", ago(e.ts)));
+    const bar = el("div", "v-bar");
+    const fill = bar.appendChild(el("div", "v-fill" + (e.done ? " done" : "")));
+    fill.style.width = (e.done ? 100 : Math.max(2, Math.min(100, e.t / e.d * 100))) + "%";
+    main.append(a, meta, bar);
+    const del = el("button", "v-del", T.del);
+    del.type = "button";
+    del.setAttribute("aria-label", T.delLabel(title));
+    del.addEventListener("click", async () => {
+      const key = "v:" + id;
+      const old = all[key];
+      await browser.storage.local.remove(key);
+      say(T.deletedOne(title), async () => { await browser.storage.local.set({ [key]: old }); }, "v-status");
+    });
+    li.append(main, del);
+    return li;
+  }
+
+  function renderVideos() {
+    const q = $("search").value.trim().toLocaleLowerCase(lang);
+    const list = Object.entries(all)
+      .filter(([k, e]) => k.startsWith("v:") && L.stats({ [k]: e }).total)
+      .map(([k, e]) => [k.slice(2), e])
+      .sort((x, y) => y[1].ts - x[1].ts);
+    $("videos-group").hidden = !list.length;
+    const hits = q ? list.filter(([id, e]) =>
+      [e.title, e.author, id].some((v) => v && v.toLocaleLowerCase(lang).includes(q))) : list;
+    $("videos").replaceChildren(...hits.slice(0, shown).map(([id, e]) => videoRow(id, e)));
+    $("no-match").hidden = !(q && !hits.length);
+    const rest = hits.length - shown;
+    $("more").hidden = rest <= 0;
+    $("more").textContent = T.more(Math.min(rest, PAGE));
+  }
+  $("search").placeholder = T.search;
+  $("search").setAttribute("aria-label", T.search);
+  $("search").addEventListener("input", () => { shown = PAGE; renderVideos(); });
+  $("more").addEventListener("click", () => { shown += PAGE; renderVideos(); });
 
   async function save(next) {
     cfg = L.normalizeSettings(next);
@@ -192,11 +270,19 @@
     return expired.filter((k) => L.stats({ [k]: all[k] }).total).length;
   }
 
+  // Status lines under the data card and the video list; an optional undo button for deletes.
   let sayTimer;
-  function say(text) {
-    $("status").textContent = text;
+  function say(text, undo, where = "status") {
+    const box = $(where);
+    box.replaceChildren(text);
+    if (undo) {
+      const b = el("button", "link", T.undo);
+      b.type = "button";
+      b.addEventListener("click", async () => { box.replaceChildren(); await undo(); });
+      box.append(" ", b);
+    }
     clearTimeout(sayTimer);
-    sayTimer = setTimeout(() => { $("status").textContent = ""; }, 8000);
+    sayTimer = setTimeout(() => box.replaceChildren(), undo ? 12000 : 8000);
   }
 
   // ---------- data ----------

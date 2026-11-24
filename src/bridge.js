@@ -29,11 +29,9 @@
         const r = await browser.storage.local.get(key(msg.id));
         reply(msg.rid, r[key(msg.id)] || null);
       } else if (msg.op === "set" && msg.value) {
-        const { t, d, done } = msg.value;
+        const { t, d } = msg.value;
         if (Number.isFinite(t) && Number.isFinite(d)) {
-          const entry = { t, d, ts: Date.now() };
-          if (done === true) entry.done = true;
-          await browser.storage.local.set({ [key(msg.id)]: entry });
+          await browser.storage.local.set({ [key(msg.id)]: L.makeEntry(msg.value, Date.now()) });
         }
       } else if (msg.op === "remove") {
         await browser.storage.local.remove(key(msg.id));

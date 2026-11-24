@@ -82,8 +82,10 @@
     const t = p.getCurrentTime();
     const d = p.getDuration();
     const action = L.saveAction(t, d, s.wasDone, cfg);
-    if (action === "save") { s.wasDone = false; send("set", s.id, { t, d }); }
-    else if (action === "done") { s.wasDone = true; send("set", s.id, { t, d, done: true }); }
+    const data = p.getVideoData() || {};
+    const label = { title: data.title, author: data.author };
+    if (action === "save") { s.wasDone = false; send("set", s.id, { t, d, ...label }); }
+    else if (action === "done") { s.wasDone = true; send("set", s.id, { t, d, done: true, ...label }); }
     else if (action === "remove") send("remove", s.id);
   }
 

@@ -29,6 +29,7 @@ about:addons → eklenti → Seçenekler (yeni sekmede açılır). Değişiklikl
 - İzlendi sayılsın: otomatik (son %5, 10–30 sn) ya da sona 10 sn, 30 sn, 1 dk, 2 dk kala. Sabit değer videonun en fazla beşte biri kadar olabilir.
 - Devam bildirimi açık/kapalı; küçük resim işaretleri açık/kapalı ve çubuk rengi.
 - Kayıt sayısı, yedeği indir (JSON), yedekten geri yükle (her video için daha yeni kayıt kazanır, ayarlar da alınır), tümünü sil.
+- Videolar listesi: başlık ve kanal adıyla, en son izlenen üstte; arama, videoyu açma ve tek tek silme (geri alınabilir). Başlık ve kanal adı 1.3.0'dan itibaren kaydedilir; daha eski kayıtlarda video tekrar izlenince görünür.
 
 ## Geliştirme
     npm test            # mantık testleri (Node)

@@ -13,8 +13,8 @@
   "version": {
     "license": "MIT",
     "release_notes": {
-      "en-US": "New settings page: how long positions are kept, the shortest video to remember, when a video counts as watched, the resume notice, and the thumbnail bar and its color. Backup, restore and delete-all for saved positions.",
-      "tr": "Yeni ayarlar sayfası: konumların saklanma süresi, hatırlanacak en kısa video, izlendi sayılma eşiği, devam bildirimi, küçük resim çubuğu ve rengi. Kayıtlı konumlar için yedekleme, geri yükleme ve tümünü silme."
+      "en-US": "New icon: a clean ring and play mark with no background, black in light themes and white in dark themes.",
+      "tr": "Yeni simge: arka planı olmayan sade bir halka ve oynat işareti; açık temada siyah, koyu temada beyaz."
     }
   }
 }

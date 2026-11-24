@@ -4,6 +4,7 @@
 //   node amo/listing.mjs add-preview <png> <position> [caption-en] [caption-tr]
 //   node amo/listing.mjs edit-preview <id> <position> [caption-en] [caption-tr]
 //   node amo/listing.mjs delete-preview <id>
+//   node amo/listing.mjs icon <png>                            listing icon (the manifest's SVG may not be used there)
 // web-ext cannot upload screenshots, and it only sends a new version's notes for an existing add-on.
 import { createHmac, randomUUID } from "node:crypto";
 import { readFileSync } from "node:fs";
@@ -57,6 +58,11 @@ if (cmd === "info") {
   if (capEn) patch.caption = { "en-US": capEn, ...(capTr ? { tr: capTr } : {}) };
   await call("PATCH", `/previews/${id}/`, patch);
   console.log("updated preview", id);
+} else if (cmd === "icon") {
+  const fd = new FormData();
+  fd.set("icon", new Blob([readFileSync(args[0])], { type: "image/png" }), basename(args[0]));
+  await call("PATCH", "/", fd);
+  console.log("icon updated");
 } else if (cmd === "delete-preview") {
   await call("DELETE", `/previews/${args[0]}/`);
   console.log("deleted preview", args[0]);

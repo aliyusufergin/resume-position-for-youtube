@@ -23,7 +23,7 @@ Konumlar yalnızca bu tarayıcının `storage.local` alanında tutulur ve dışa
 - 90 gündür açılmayan videoların kayıtları silinir.
 
 ## Ayarlar
-about:addons → eklenti → Seçenekler (yeni sekmede açılır). Değişiklikler hemen uygulanır; yukarıdaki süreler varsayılanlardır.
+Araç çubuğundaki eklenti düğmesi ya da about:addons → eklenti → Seçenekler (yeni sekmede açılır). Değişiklikler hemen uygulanır; yukarıdaki süreler varsayılanlardır.
 - Konumları sakla: 30 gün, 90 gün, 6 ay, 1 yıl, süresiz. Kısaltınca eski kayıtlar onay alınarak hemen silinir.
 - Hatırlanacak en kısa video: 1, 1,5, 3, 5, 10 dk.
 - İzlendi sayılsın: otomatik (son %5, 10–30 sn) ya da sona 10 sn, 30 sn, 1 dk, 2 dk kala. Sabit değer videonun en fazla beşte biri kadar olabilir.

@@ -25,6 +25,27 @@
   "host_permissions": [
     "https://www.youtube.com/*"
   ],
+  "background": {
+    "scripts": [
+      "src/background.js"
+    ]
+  },
+  "action": {
+    "default_title": "Resume Position for YouTube",
+    "default_icon": "icons/icon.svg",
+    "theme_icons": [
+      {
+        "light": "icons/icon-white.svg",
+        "dark": "icons/icon-black.svg",
+        "size": 16
+      },
+      {
+        "light": "icons/icon-white.svg",
+        "dark": "icons/icon-black.svg",
+        "size": 32
+      }
+    ]
+  },
   "incognito": "not_allowed",
   "options_ui": {
     "page": "options/options.html",

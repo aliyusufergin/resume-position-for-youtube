@@ -1,5 +1,6 @@
 // Manage the AMO listing through the v5 API. Reads WEB_EXT_API_KEY / WEB_EXT_API_SECRET from env.
 //   node amo/listing.mjs info                                  status, previews
+//   node amo/listing.mjs versions                              latest versions and their review status
 //   node amo/listing.mjs meta                                  push summary + description from amo/metadata.json
 //   node amo/listing.mjs add-preview <png> <position> [caption-en] [caption-tr]
 //   node amo/listing.mjs edit-preview <id> <position> [caption-en] [caption-tr]
@@ -39,6 +40,9 @@ if (cmd === "info") {
   const a = await call("GET", "/");
   console.log(a.slug, a.status, "current:", a.current_version?.version, a.url);
   for (const p of a.previews || []) console.log("preview", p.id, "pos", p.position, JSON.stringify(p.caption));
+} else if (cmd === "versions") {
+  const v = await call("GET", "/versions/?filter=all_with_unlisted");
+  for (const x of v.results.slice(0, 6)) console.log(x.version, x.channel, x.file?.status, x.is_disabled ? "disabled" : "");
 } else if (cmd === "meta") {
   const m = JSON.parse(readFileSync(new URL("metadata.json", import.meta.url), "utf8"));
   await call("PATCH", "/", { summary: m.summary, description: m.description });

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title data-i18n="pageTitle">Resume Position for YouTube</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <main class="page">
+    <header class="head">
+      <img class="logo" src="../icons/icon-96.png" width="56" height="56" alt="">
+      <div>
+        <h1 data-i18n="name">Resume Position for YouTube</h1>
+        <p class="lead" data-i18n="lead"></p>
+      </div>
+    </header>
+
+    <!-- Live preview: redraws as the settings change. Drawn with CSS only, no YouTube imagery. -->
+    <section class="preview" aria-labelledby="preview-caption">
+      <div class="stage">
+        <div class="player scene-a">
+          <div class="toast" id="pv-toast">
+            <span><span data-i18n="resumed"></span><span class="num">12:34</span></span>
+            <span class="toast-btn" data-i18n="restart"></span>
+          </div>
+          <div class="timeline"><div class="timeline-fill"></div></div>
+        </div>
+        <div class="thumbs">
+          <div class="thumb scene-b" id="pv-thumb-a">
+            <div class="mark"><div class="mark-bar"><div class="mark-fill" style="width: 42%"></div></div></div>
+            <span class="duration num">18:20</span>
+          </div>
+          <div class="thumb scene-c" id="pv-thumb-b">
+            <div class="mark done"><div class="mark-bar"><div class="mark-fill" style="width: 100%"></div></div>
+              <span class="badge">✓ <span data-i18n="watched"></span></span></div>
+            <span class="duration num">7:05</span>
+          </div>
+        </div>
+      </div>
+      <p class="caption" id="preview-caption" data-i18n="previewCaption"></p>
+    </section>
+
+    <section class="group" aria-labelledby="h-resume">
+      <h2 id="h-resume" data-i18n="hResume"></h2>
+
+      <div class="row">
+        <div class="text">
+          <label class="label" for="toast" data-i18n="toastLabel"></label>
+          <p class="desc" data-i18n="toastDesc"></p>
+        </div>
+        <input class="switch" type="checkbox" role="switch" id="toast">
+      </div>
+
+      <div class="row">
+        <div class="text">
+          <span class="label" id="l-minDuration" data-i18n="minLabel"></span>
+          <p class="desc" data-i18n="minDesc"></p>
+        </div>
+        <div class="segments" role="radiogroup" aria-labelledby="l-minDuration" data-setting="minDuration"></div>
+      </div>
+
+      <div class="row">
+        <div class="text">
+          <span class="label" id="l-endMargin" data-i18n="endLabel"></span>
+          <p class="desc" data-i18n="endDesc"></p>
+        </div>
+        <div class="segments" role="radiogroup" aria-labelledby="l-endMargin" data-setting="endMargin"></div>
+      </div>
+    </section>
+
+    <section class="group" aria-labelledby="h-thumbs">
+      <h2 id="h-thumbs" data-i18n="hThumbs"></h2>
+
+      <div class="row">
+        <div class="text">
+          <label class="label" for="thumbs" data-i18n="thumbsLabel"></label>
+          <p class="desc" data-i18n="thumbsDesc"></p>
+        </div>
+        <input class="switch" type="checkbox" role="switch" id="thumbs">
+      </div>
+
+      <div class="row" id="row-color">
+        <div class="text">
+          <span class="label" id="l-color" data-i18n="colorLabel"></span>
+        </div>
+        <div class="swatches" role="radiogroup" aria-labelledby="l-color"></div>
+      </div>
+    </section>
+
+    <section class="group" aria-labelledby="h-data">
+      <h2 id="h-data" data-i18n="hData"></h2>
+
+      <div class="row">
+        <div class="text">
+          <span class="label" id="l-retention" data-i18n="retLabel"></span>
+          <p class="desc" data-i18n="retDesc"></p>
+        </div>
+        <div class="segments" role="radiogroup" aria-labelledby="l-retention" data-setting="retentionDays"></div>
+      </div>
+      <div class="confirm" id="ret-confirm" hidden>
+        <p id="ret-confirm-text"></p>
+        <div class="buttons">
+          <button type="button" class="btn danger" id="ret-yes" data-i18n="retConfirmYes"></button>
+          <button type="button" class="btn" id="ret-no" data-i18n="cancel"></button>
+        </div>
+      </div>
+
+      <div class="store">
+        <p class="store-total" id="store-total"></p>
+        <div class="meter" id="meter" aria-hidden="true">
+          <div class="meter-partial"></div><div class="meter-done"></div>
+        </div>
+        <ul class="legend" id="legend">
+          <li><i class="dot partial"></i><span id="n-partial" class="num"></span> <span data-i18n="partial"></span></li>
+          <li><i class="dot done"></i><span id="n-done" class="num"></span> <span data-i18n="done"></span></li>
+        </ul>
+      </div>
+
+      <div class="buttons">
+        <button type="button" class="btn" id="export" data-i18n="export"></button>
+        <button type="button" class="btn" id="import" data-i18n="import"></button>
+        <input type="file" id="import-file" accept=".json,application/json" hidden>
+        <button type="button" class="btn danger quiet" id="clear" data-i18n="clear"></button>
+      </div>
+      <div class="confirm" id="clear-confirm" hidden>
+        <p id="clear-confirm-text"></p>
+        <div class="buttons">
+          <button type="button" class="btn danger" id="clear-yes" data-i18n="clearYes"></button>
+          <button type="button" class="btn" id="clear-no" data-i18n="cancel"></button>
+        </div>
+      </div>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <footer class="foot">
+      <p data-i18n="privacy"></p>
+      <p class="num" id="version"></p>
+    </footer>
+  </main>
+  <script src="../src/logic.js"></script>
+  <script src="options.js"></script>
+</body>
+</html>

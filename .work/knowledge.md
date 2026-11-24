@@ -50,7 +50,7 @@
 - In headless Firefox, ads don't play (they stay stuck), so the ad→content transition can't be checked automatically.
 
 ## How to check a change works
-`npm test` (logic), `npx web-ext lint`, then `FIREFOX_BIN=... npm run e2e` (14 scenarios on real YouTube; it needs network, and YouTube's recommendations change, so the results can vary).
+`npm test` (logic), `npx web-ext lint`, then `FIREFOX_BIN=... npm run e2e` (17 scenarios on real YouTube; it needs network, and YouTube's recommendations change, so the results can vary).
 
 Use a real Firefox (`web-ext run`) and cover these scenarios:
 - resume after reload
@@ -65,5 +65,11 @@ Use a real Firefox (`web-ext run`) and cover these scenarios:
 ## AMO (2026-11-20)
 - Add-on is listed: slug `resume-position-for-youtube`, guid `@yt-resume-local`. 1.0.0 was unlisted; listed releases start at 1.0.1.
 - `web-ext sign` approval for a listed submission can take longer than its 15 min wait. The timeout isn't an error; the submission is still in the queue.
-- web-ext cannot upload screenshots. Use `amo/upload-preview.mjs` (AMO v5 API with a JWT). Captions go in a separate JSON PATCH after the upload.
+- web-ext cannot upload screenshots, and for an existing add-on it only sends the version's release notes. `amo/listing.mjs` (AMO v5 API with a JWT) pushes summary/description and manages previews; captions and position go in a JSON PATCH after the upload.
 - An add-on first created as unlisted gets a random-hex slug. Fix it with a `slug` PATCH.
+
+## Settings (1.2.0)
+- Stored as `settings` in storage.local; `YTResumeLogic.normalizeSettings` accepts only values in `CHOICES`, so a bad or old object falls back to defaults.
+- page.js (MAIN world) gets them through the bridge: bridge.js pushes `ytresume:settings` on load and on change, and page.js also asks once (`op: "settings"`), because either side may load first. The first resume waits for them (max 1.5 s).
+- Options page opens in a tab (`open_in_tab`). WebDriver BiDi refuses to navigate to moz-extension:// URLs, so check the page from file:// with a stubbed `browser` object (in-memory storage).
+- Store screenshots: no third-party thumbnails or faces. Use generated art with the real overlay CSS.

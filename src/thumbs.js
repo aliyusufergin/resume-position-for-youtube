@@ -1,5 +1,5 @@
 // Isolated-world content script: draws a progress bar / "watched" badge on video thumbnails
-// from the positions in storage. Reads storage directly and follows its changes live.
+// from the positions in storage, following the thumbnail settings. Reads storage directly and follows its changes live.
 "use strict";
 
 (function () {
@@ -14,6 +14,12 @@
 
   const WATCHED = { tr: "İzlendi" }[(navigator.language || "en").slice(0, 2).toLowerCase()] || "Watched";
   const entries = new Map(); // videoId -> stored entry
+  let cfg = L.DEFAULTS;
+
+  function applySettings(raw) {
+    cfg = L.normalizeSettings(raw);
+    document.documentElement.style.setProperty("--ytr-color", cfg.thumbColor);
+  }
 
   function videoIdOf(el) {
     const a = el.tagName === "A" ? el : el.closest("a[href]");
@@ -26,7 +32,7 @@
   function render(host) {
     if (host.closest(SKIP_SELECTOR)) return;
     const id = videoIdOf(host);
-    const st = id ? L.thumbState(entries.get(id)) : null;
+    const st = id && cfg.thumbs ? L.thumbState(entries.get(id)) : null;
     const sig = st ? (st.done ? "done" : "p" + Math.round(st.pct)) + ":" + id : "";
     if ((host.dataset.ytr || "") === sig) return;
     host.dataset.ytr = sig;
@@ -63,6 +69,7 @@
   browser.storage.onChanged.addListener((changes, area) => {
     if (area !== "local") return;
     let touched = false;
+    if (changes.settings) { applySettings(changes.settings.newValue); touched = true; }
     for (const [k, c] of Object.entries(changes)) {
       if (!k.startsWith("v:")) continue;
       touched = true;
@@ -72,6 +79,7 @@
   });
 
   browser.storage.local.get(null).then((all) => {
+    applySettings(all.settings);
     for (const [k, v] of Object.entries(all)) if (k.startsWith("v:")) entries.set(k.slice(2), v);
     const start = () => {
       new MutationObserver(queueScan).observe(document.documentElement, {

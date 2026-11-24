@@ -53,15 +53,63 @@ test("hasExplicitTime", () => {
   assert.equal(L.hasExplicitTime(`https://www.youtube.com/feed/subscriptions`, id), false); // miniplayer
 });
 
-test("expiredKeys", () => {
+test("expiredKeys follows the retention setting", () => {
+  const DAY = 24 * 60 * 60 * 1000;
   const now = Date.now();
   const entries = {
     "v:new": { t: 1, d: 2, ts: now - 1000 },
-    "v:old": { t: 1, d: 2, ts: now - L.MAX_AGE_MS - 1 },
+    "v:d60": { t: 1, d: 2, ts: now - 60 * DAY },
+    "v:old": { t: 1, d: 2, ts: now - 91 * DAY },
     "v:bad": { t: 1 },
     "meta:lastPrune": 0,
+    settings: { retentionDays: 30 },
   };
-  assert.deepEqual(L.expiredKeys(entries, now).sort(), ["v:bad", "v:old"]);
+  assert.deepEqual(L.expiredKeys(entries, now).sort(), ["v:bad", "v:old"]);          // default 90
+  assert.deepEqual(L.expiredKeys(entries, now, { retentionDays: 30 }).sort(), ["v:bad", "v:d60", "v:old"]);
+  assert.deepEqual(L.expiredKeys(entries, now, { retentionDays: 0 }), ["v:bad"]);    // forever
+});
+
+test("normalizeSettings keeps only known values", () => {
+  assert.deepEqual(L.normalizeSettings(undefined), L.DEFAULTS);
+  const s = L.normalizeSettings({ retentionDays: 0, minDuration: 7, toast: false, thumbs: "no", thumbColor: "#3b82f6", x: 1 });
+  assert.equal(s.retentionDays, 0);
+  assert.equal(s.minDuration, 90);
+  assert.equal(s.toast, false);
+  assert.equal(s.thumbs, true);
+  assert.equal(s.thumbColor, "#3b82f6");
+  assert.equal("x" in s, false);
+});
+
+test("behaviour settings", () => {
+  const cfg = L.normalizeSettings({ minDuration: 300, endMargin: 120 });
+  assert.equal(L.saveAction(100, 200, false, cfg), "skip");      // shorter than 5 min
+  assert.equal(L.saveAction(100, 200), "save");
+  assert.equal(L.saveAction(1100, 1200, false, cfg), "done");    // last 2 minutes
+  assert.equal(L.saveAction(1100, 1200), "save");
+  assert.equal(L.endMargin(400, cfg), 80);                       // capped at a fifth of the video
+  assert.equal(L.resumeTarget({ t: 1100, d: 1200 }, 1200, false, cfg), null);
+});
+
+test("export / import round trip, newer entry wins", () => {
+  const now = Date.now();
+  const all = {
+    "v:aaaaaaaaaaa": { t: 50, d: 600, ts: 100 },
+    "v:bbbbbbbbbbb": { t: 590, d: 600, ts: 200, done: true },
+    "v:junk": { t: 1 },
+    "meta:lastPrune": 5,
+    settings: { retentionDays: 365 },
+  };
+  const backup = JSON.parse(JSON.stringify(L.exportData(all, now)));
+  assert.deepEqual(Object.keys(backup.videos).sort(), ["aaaaaaaaaaa", "bbbbbbbbbbb"]);
+  assert.equal(backup.settings.retentionDays, 365);
+  const existing = { "v:aaaaaaaaaaa": { t: 70, d: 600, ts: 150 } };
+  backup.videos["bad id!"] = { t: 1, d: 600, ts: 1 };
+  const r = L.importData(backup, existing);
+  assert.deepEqual(Object.keys(r.set), ["v:bbbbbbbbbbb"]);     // local "a" is newer
+  assert.equal(r.set["v:bbbbbbbbbbb"].done, true);
+  assert.deepEqual([r.added, r.updated, r.skipped], [1, 0, 2]);
+  assert.throws(() => L.importData({ hello: 1 }, {}));
+  assert.deepEqual(L.stats(all), { total: 2, done: 1, partial: 1 });
 });
 
 test("formatTime", () => {

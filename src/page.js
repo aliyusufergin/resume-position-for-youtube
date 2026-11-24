@@ -23,6 +23,18 @@
   const T = STRINGS[(navigator.language || "en").slice(0, 2).toLowerCase()] || STRINGS.en;
   const NEAR_S = 10;
 
+  // ---------- settings ----------
+  // bridge.js pushes them on load and on every change; we also ask once, in case its push
+  // went out before this script was listening. Either one unblocks the first resume.
+  let cfg = L.DEFAULTS;
+  let markReady;
+  const settingsReady = new Promise((resolve) => { markReady = resolve; });
+  setTimeout(() => markReady(), 1500);
+  document.addEventListener("ytresume:settings", (e) => {
+    try { cfg = L.normalizeSettings(JSON.parse(e.detail)); } catch (err) { /* keep current */ }
+    markReady();
+  });
+
   // ---------- bridge ----------
   let nextRid = 1;
   const pending = new Map();
@@ -34,7 +46,7 @@
   });
   function send(op, id, value) {
     const rid = nextRid++;
-    const p = op === "get"
+    const p = op === "get" || op === "settings"
       ? new Promise((resolve) => {
           pending.set(rid, resolve);
           setTimeout(() => { if (pending.delete(rid)) resolve(null); }, 3000);
@@ -43,6 +55,7 @@
     document.dispatchEvent(new CustomEvent("ytresume:req", { detail: JSON.stringify({ rid, op, id, value }) }));
     return p;
   }
+  send("settings").then((v) => { if (v) cfg = L.normalizeSettings(v); markReady(); });
 
   // ---------- player helpers ----------
   function mainPlayerFor(video) {
@@ -68,7 +81,7 @@
     s.lastSave = now;
     const t = p.getCurrentTime();
     const d = p.getDuration();
-    const action = L.saveAction(t, d, s.wasDone);
+    const action = L.saveAction(t, d, s.wasDone, cfg);
     if (action === "save") { s.wasDone = false; send("set", s.id, { t, d }); }
     else if (action === "done") { s.wasDone = true; send("set", s.id, { t, d, done: true }); }
     else if (action === "remove") send("remove", s.id);
@@ -83,14 +96,14 @@
     cur = s;
     if (s.skip) return;
     const explicit = L.hasExplicitTime(location.href, id);
-    send("get", id).then((saved) => {
+    Promise.all([send("get", id), settingsReady]).then(([saved]) => {
       if (cur !== s) return;
       s.wasDone = !!(saved && saved.done);
-      const target = L.resumeTarget(saved, p.getDuration(), explicit);
+      const target = L.resumeTarget(saved, p.getDuration(), explicit, cfg);
       // Already there (miniplayer expanded, mid-roll ad ended): don't jump or announce.
       if (target === null || Math.abs(p.getCurrentTime() - target) < NEAR_S) { s.phase = "active"; return; }
       seek(p, target);
-      showToast(p, target, s);
+      if (cfg.toast) showToast(p, target, s);
       // YouTube's own start-up seek can land after ours; check once and redo.
       setTimeout(() => {
         if (cur !== s) return;

@@ -22,6 +22,14 @@ Konumlar yalnızca bu tarayıcının `storage.local` alanında tutulur ve dışa
 - Eklenti gizli pencerelerde çalışmaz.
 - 90 gündür açılmayan videoların kayıtları silinir.
 
+## Ayarlar
+about:addons → eklenti → Seçenekler (yeni sekmede açılır). Değişiklikler hemen uygulanır; yukarıdaki süreler varsayılanlardır.
+- Konumları sakla: 30 gün, 90 gün, 6 ay, 1 yıl, süresiz. Kısaltınca eski kayıtlar onay alınarak hemen silinir.
+- Hatırlanacak en kısa video: 1, 1,5, 3, 5, 10 dk.
+- İzlendi sayılsın: otomatik (son %5, 10–30 sn) ya da sona 10 sn, 30 sn, 1 dk, 2 dk kala. Sabit değer videonun en fazla beşte biri kadar olabilir.
+- Devam bildirimi açık/kapalı; küçük resim işaretleri açık/kapalı ve çubuk rengi.
+- Kayıt sayısı, yedeği indir (JSON), yedekten geri yükle (her video için daha yeni kayıt kazanır, ayarlar da alınır), tümünü sil.
+
 ## Geliştirme
     npm test            # mantık testleri (Node)
     npx web-ext lint
@@ -36,4 +44,5 @@ Bunun için gereken anahtarlar addons.mozilla.org > Developer Hub > Manage API K
     WEB_EXT_API_KEY=... WEB_EXT_API_SECRET=... npm run sign
 
 Her imzalamadan önce `manifest.json` içindeki `version` artırılmalı. Mağaza metinleri `amo/metadata.json` dosyasında
-(`--amo-metadata amo/metadata.json` ile gönderilir). Ekran görüntüsü yüklemek için: `node amo/upload-preview.mjs amo/screenshot-1.png "caption"`.
+(sürüm notları `--amo-metadata amo/metadata.json` ile gider; özet ve açıklama için `node amo/listing.mjs meta`).
+Ekran görüntüleri: `node amo/listing.mjs info | add-preview <png> <sıra> [en] [tr] | delete-preview <id>`.

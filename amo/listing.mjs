@@ -2,6 +2,7 @@
 //   node amo/listing.mjs info                                  status, previews
 //   node amo/listing.mjs meta                                  push summary + description from amo/metadata.json
 //   node amo/listing.mjs add-preview <png> <position> [caption-en] [caption-tr]
+//   node amo/listing.mjs edit-preview <id> <position> [caption-en] [caption-tr]
 //   node amo/listing.mjs delete-preview <id>
 // web-ext cannot upload screenshots, and it only sends a new version's notes for an existing add-on.
 import { createHmac, randomUUID } from "node:crypto";
@@ -22,6 +23,12 @@ async function call(method, path, body) {
   if (body && !(body instanceof FormData)) { headers["Content-Type"] = "application/json"; body = JSON.stringify(body); }
   const r = await fetch(API + path, { method, headers, body });
   const text = await r.text();
+  if (r.status === 429) {   // AMO throttles bursts of writes: wait as told, then retry
+    const wait = Number((text.match(/(\d+) seconds?/) || [])[1] || 60);
+    console.log(`throttled, retrying in ${wait + 2}s`);
+    await new Promise((res) => setTimeout(res, (wait + 2) * 1000));
+    return call(method, path, body instanceof FormData || typeof body !== "string" ? body : JSON.parse(body));
+  }
   if (!r.ok) throw new Error(`${method} ${path}: ${r.status} ${text.slice(0, 300)}`);
   return text ? JSON.parse(text) : null;
 }
@@ -44,9 +51,15 @@ if (cmd === "info") {
   if (capEn) patch.caption = { "en-US": capEn, ...(capTr ? { tr: capTr } : {}) };
   await call("PATCH", `/previews/${p.id}/`, patch);
   console.log("added preview", p.id);
+} else if (cmd === "edit-preview") {
+  const [id, position, capEn, capTr] = args;
+  const patch = { position: Number(position) || 0 };
+  if (capEn) patch.caption = { "en-US": capEn, ...(capTr ? { tr: capTr } : {}) };
+  await call("PATCH", `/previews/${id}/`, patch);
+  console.log("updated preview", id);
 } else if (cmd === "delete-preview") {
   await call("DELETE", `/previews/${args[0]}/`);
   console.log("deleted preview", args[0]);
 } else {
-  console.log("usage: info | meta | add-preview <png> <position> [en] [tr] | delete-preview <id>");
+  console.log("usage: info | meta | add-preview <png> <position> [en] [tr] | edit-preview <id> <position> [en] [tr] | delete-preview <id>");
 }

@@ -67,6 +67,7 @@ Use a real Firefox (`web-ext run`) and cover these scenarios:
 - `web-ext sign` approval for a listed submission can take longer than its 15 min wait. The timeout isn't an error; the submission is still in the queue.
 - web-ext cannot upload screenshots, and for an existing add-on it only sends the version's release notes. `amo/listing.mjs` (AMO v5 API with a JWT) pushes summary/description and manages previews; captions and position go in a JSON PATCH after the upload.
 - An add-on first created as unlisted gets a random-hex slug. Fix it with a `slug` PATCH.
+- AMO shows the description as plain text: HTML like `<b>` is escaped and appears literally. Use plain lines and • bullets.
 
 ## Settings (1.2.0)
 - Stored as `settings` in storage.local; `YTResumeLogic.normalizeSettings` accepts only values in `CHOICES`, so a bad or old object falls back to defaults.

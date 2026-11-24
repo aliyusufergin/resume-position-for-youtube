@@ -138,10 +138,7 @@
     $("row-color").classList.toggle("off", !cfg.thumbs);
     for (const input of swatches.querySelectorAll("input")) input.disabled = !cfg.thumbs;
 
-    // White is a bar color, not a usable accent on a light page.
-    const root = document.documentElement.style;
-    root.setProperty("--bar", cfg.thumbColor);
-    root.setProperty("--accent", cfg.thumbColor === "#f9fafb" ? "var(--ink)" : cfg.thumbColor);
+    document.documentElement.style.setProperty("--bar", cfg.thumbColor);
     $("pv-toast").classList.toggle("hidden", !cfg.toast);
     for (const id of ["pv-thumb-a", "pv-thumb-b"]) $(id).classList.toggle("bare", !cfg.thumbs);
 

@@ -13,8 +13,8 @@
   "version": {
     "license": "MIT",
     "release_notes": {
-      "en-US": "New icon: a clean ring and play mark with no background, black in light themes and white in dark themes.",
-      "tr": "Yeni simge: arka planı olmayan sade bir halka ve oynat işareti; açık temada siyah, koyu temada beyaz."
+      "en-US": "New icon: a clean ring and play mark with no background, black in light themes and white in dark themes. The settings page has a new, simpler black-and-white look.",
+      "tr": "Yeni simge: arka planı olmayan sade bir halka ve oynat işareti; açık temada siyah, koyu temada beyaz. Ayarlar sayfası daha sade, siyah beyaz bir görünüme kavuştu."
     }
   }
 }

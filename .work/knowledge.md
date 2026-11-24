@@ -72,6 +72,6 @@ Use a real Firefox (`web-ext run`) and cover these scenarios:
 ## Settings (1.2.0)
 - Stored as `settings` in storage.local; `YTResumeLogic.normalizeSettings` accepts only values in `CHOICES`, so a bad or old object falls back to defaults.
 - page.js (MAIN world) gets them through the bridge: bridge.js pushes `ytresume:settings` on load and on change, and page.js also asks once (`op: "settings"`), because either side may load first. The first resume waits for them (max 1.5 s).
-- Options page opens in a tab (`open_in_tab`). WebDriver BiDi refuses to navigate to moz-extension:// URLs, so check the page from file:// with a stubbed `browser` object (in-memory storage).
+- Options page opens in a tab (`open_in_tab`). Look (1.2.2): monochrome like the icon, grouped rows in rounded cards; the only colour is the user's bar colour (`--bar`). WebDriver BiDi refuses to navigate to moz-extension:// URLs, so check the page from file:// with a stubbed `browser` object (in-memory storage).
 - Store screenshots: no third-party thumbnails or faces. Use generated art with the real overlay CSS.
 - Icon (1.2.1): `icons/icon.svg` has no background and switches black/white with `prefers-color-scheme` inside the SVG; the manifest uses only the SVG. The AMO listing gets the black PNG `amo/icon-128.png` (`node amo/listing.mjs icon`).

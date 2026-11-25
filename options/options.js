@@ -5,101 +5,15 @@
   const L = YTResumeLogic;
   const $ = (id) => document.getElementById(id);
 
-  const STRINGS = {
-    en: {
-      pageTitle: "Resume Position for YouTube settings",
-      name: "Resume Position for YouTube",
-      lead: "Remembers where you stopped each YouTube video, in this browser only. Changes apply right away.",
-      resumed: "Resumed at ", restart: "Start over", watched: "Watched",
-      previewCaption: "Preview. It follows your settings.",
-      hResume: "Resuming",
-      toastLabel: "Show a notice when resuming",
-      toastDesc: "Shows the time you resumed at and a Start over button for a few seconds.",
-      minLabel: "Shortest video to remember",
-      minDesc: "Positions in shorter videos aren't saved.",
-      endLabel: "Count as watched",
-      endDesc: "Close a video this close to its end and it counts as watched, so it starts from the beginning next time. Automatic is the last 5% (10 to 30 seconds).",
-      hThumbs: "Thumbnails",
-      thumbsLabel: "Show progress on thumbnails",
-      thumbsDesc: "A bar under videos you started, and a Watched badge on the ones you finished. In search, recommendations and channel pages.",
-      colorLabel: "Bar color",
-      hData: "Saved positions",
-      retLabel: "Keep positions for",
-      retDesc: "Positions of videos you haven't opened for this long are deleted.",
-      retConfirm: (n, label) => `${n} saved ${n === 1 ? "position is" : "positions are"} older than ${label} and will be deleted now.`,
-      retConfirmYes: "Delete and keep the change", cancel: "Cancel",
-      retDeleted: (n) => `Deleted ${n} old ${n === 1 ? "position" : "positions"}.`,
-      total: (n) => n === 1 ? "1 video saved" : `${n} videos saved`,
-      empty: "Nothing saved yet. Watch a video for more than 10 seconds and it shows up here.",
-      partial: "in progress", done: "watched",
-      export: "Download backup", import: "Restore from backup", clear: "Delete all positions",
-      clearConfirm: (n) => `Delete all ${n} saved ${n === 1 ? "position" : "positions"}? This can't be undone.`,
-      clearYes: "Delete all", cleared: "All positions deleted.",
-      exported: "Backup downloaded.",
-      imported: (a, u, s) => `Restored ${a} new and ${u} updated ${a + u === 1 ? "position" : "positions"}` +
-        (s ? `, skipped ${s} (the copy here was newer or the entry was invalid)` : "") + ". Settings were restored too.",
-      importFailed: "That file isn't a backup from this add-on. Choose a file downloaded with Download backup.",
-      privacy: "Everything stays in this browser. The add-on makes no network requests and keeps no account.",
-      version: (v) => `Version ${v}`,
-      hVideos: "Videos", search: "Search by title or channel",
-      untitled: (id) => `Video ${id}`, untitledHint: "Title appears after you watch it again",
-      del: "Delete", delLabel: (t) => `Delete ${t}`, deletedOne: (t) => `Deleted “${t}”.`, undo: "Undo",
-      more: (n) => `Show ${n} more`, noMatch: "No videos match.",
-      colors: ["Amber", "Red", "Blue", "Green", "Purple", "White"],
-      auto: "Automatic", forever: "Forever",
-      sec: (n) => `${n} s`, min: (n) => `${n} min`, days: (n) => `${n} days`, months: (n) => `${n} months`, year: "1 year",
-    },
-    tr: {
-      pageTitle: "Resume Position for YouTube ayarları",
-      name: "Resume Position for YouTube",
-      lead: "YouTube videolarında kaldığın yeri yalnızca bu tarayıcıda hatırlar. Değişiklikler hemen uygulanır.",
-      resumed: "Kaldığın yerden devam: ", restart: "Baştan başlat", watched: "İzlendi",
-      previewCaption: "Önizleme. Ayarlarına göre değişir.",
-      hResume: "Kaldığın yerden devam",
-      toastLabel: "Devam ederken bildirim göster",
-      toastDesc: "Birkaç saniye boyunca devam edilen süreyi ve Baştan başlat düğmesini gösterir.",
-      minLabel: "Hatırlanacak en kısa video",
-      minDesc: "Daha kısa videolarda konum kaydedilmez.",
-      endLabel: "İzlendi sayılsın",
-      endDesc: "Videoyu sonuna bu kadar kala kapatırsan izlendi sayılır ve bir dahakine baştan başlar. Otomatik: videonun son %5'i (10–30 saniye).",
-      hThumbs: "Küçük resimler",
-      thumbsLabel: "Küçük resimlerde ilerlemeyi göster",
-      thumbsDesc: "Başladığın videoların altında bir çubuk, bitirdiklerinde İzlendi etiketi. Arama, öneriler ve kanal sayfalarında.",
-      colorLabel: "Çubuk rengi",
-      hData: "Kayıtlı konumlar",
-      retLabel: "Konumları sakla",
-      retDesc: "Bu süre boyunca açmadığın videoların konumları silinir.",
-      retConfirm: (n, label) => `${label} süresinden eski ${n} kayıt şimdi silinecek.`,
-      retConfirmYes: "Sil ve değiştir", cancel: "Vazgeç",
-      retDeleted: (n) => `Eski ${n} kayıt silindi.`,
-      total: (n) => `${n} video kayıtlı`,
-      empty: "Henüz kayıt yok. Bir videoyu 10 saniyeden fazla izleyince burada görünür.",
-      partial: "yarım", done: "izlendi",
-      export: "Yedeği indir", import: "Yedekten geri yükle", clear: "Tüm kayıtları sil",
-      clearConfirm: (n) => `Kayıtlı ${n} konumun tümü silinsin mi? Bu geri alınamaz.`,
-      clearYes: "Tümünü sil", cleared: "Tüm kayıtlar silindi.",
-      exported: "Yedek indirildi.",
-      imported: (a, u, s) => `Geri yüklendi: ${a} yeni, ${u} güncellenen kayıt` +
-        (s ? `; ${s} kayıt atlandı (buradaki daha yeni ya da kayıt bozuk)` : "") + ". Ayarlar da yedekten alındı.",
-      importFailed: "Bu dosya bu eklentinin yedeği değil. Yedeği indir ile alınmış bir dosya seç.",
-      privacy: "Her şey bu tarayıcıda kalır. Eklenti hiçbir ağ isteği yapmaz, hesap tutmaz.",
-      version: (v) => `Sürüm ${v}`,
-      hVideos: "Videolar", search: "Başlık ya da kanal ara",
-      untitled: (id) => `Video ${id}`, untitledHint: "Başlık, videoyu tekrar izleyince görünür",
-      del: "Sil", delLabel: (t) => `${t} kaydını sil`, deletedOne: (t) => `“${t}” silindi.`, undo: "Geri al",
-      more: (n) => `${n} video daha göster`, noMatch: "Eşleşen video yok.",
-      colors: ["Kehribar", "Kırmızı", "Mavi", "Yeşil", "Mor", "Beyaz"],
-      auto: "Otomatik", forever: "Süresiz",
-      sec: (n) => `${n} sn`, min: (n) => `${n} dk`, days: (n) => `${n} gün`, months: (n) => `${n} ay`, year: "1 yıl",
-    },
-  };
-  const lang = (browser.i18n.getUILanguage() || "en").slice(0, 2).toLowerCase() === "tr" ? "tr" : "en";
-  const T = STRINGS[lang];
+  const LANGS = ["en", "tr", "de", "fr", "es", "pt", "ru"];
+  const uiLang = (browser.i18n.getUILanguage() || "en").slice(0, 2).toLowerCase();
+  const lang = LANGS.includes(uiLang) ? uiLang : "en";
+  const T = YTResumeStrings[lang];
   document.documentElement.lang = lang;
 
   // Labels for each choice in L.CHOICES.
   const LABELS = {
-    minDuration: (v) => (v % 60 ? T.min(String(v / 60).replace(".", lang === "tr" ? "," : ".")) : T.min(v / 60)),
+    minDuration: (v) => T.min(new Intl.NumberFormat(lang).format(v / 60)),
     endMargin: (v) => (v === 0 ? T.auto : v < 60 ? T.sec(v) : T.min(v / 60)),
     retentionDays: (v) => (v === 0 ? T.forever : v === 365 ? T.year : v === 180 ? T.months(6) : T.days(v)),
   };

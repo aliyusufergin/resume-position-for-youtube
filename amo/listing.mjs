@@ -1,7 +1,7 @@
 // Manage the AMO listing through the v5 API. Reads WEB_EXT_API_KEY / WEB_EXT_API_SECRET from env.
 //   node amo/listing.mjs info                                  status, previews
 //   node amo/listing.mjs versions                              latest versions and their review status
-//   node amo/listing.mjs meta                                  push summary, description, homepage, support_url from amo/metadata.json
+//   node amo/listing.mjs meta                                  push summary, description, homepage, support_url, tags from amo/metadata.json
 //   node amo/listing.mjs add-preview <png> <position> [caption-en] [caption-tr]
 //   node amo/listing.mjs edit-preview <id> <position> [caption-en] [caption-tr]
 //   node amo/listing.mjs delete-preview <id>
@@ -48,6 +48,7 @@ if (cmd === "info") {
   const body = { summary: m.summary, description: m.description };
   if (m.homepage) body.homepage = m.homepage;
   if (m.support_url) body.support_url = m.support_url;
+  if (m.tags) body.tags = m.tags;
   await call("PATCH", "/", body);
   console.log("listing updated:", Object.keys(body).join(", "));
 } else if (cmd === "add-preview") {

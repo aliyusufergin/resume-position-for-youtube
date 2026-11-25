@@ -1,49 +1,68 @@
 # Resume Position for YouTube
 
-Firefox eklentisi. YouTube izleme geçmişi kapalıyken de videolara kaldığın yerden devam etmeni sağlar.
-Konumlar yalnızca bu tarayıcının `storage.local` alanında tutulur ve dışarı hiçbir veri gönderilmez.
+**A Firefox add-on that resumes YouTube videos where you left off, even with YouTube watch history turned off.**
 
-## Davranış
-- Konum yaklaşık 5 saniyede bir kaydedilir. Duraklatınca, sekmeden çıkınca ve başka videoya geçince de kaydedilir.
-- Videoyu tekrar açınca kaldığın yerden başlar. Ekrana "Kaldığın yerden devam: 12:34" bildirimi gelir ve "Baştan başlat" düğmesiyle baştan izleyebilirsin.
-- Şu durumlarda kaldığın yerden devam edilmez:
-  - Linkte `t=`, `start=` veya `#t=` varsa; o zaman linkteki süre kullanılır.
-  - Video bitmişse (son %5'i, 10–30 sn arası) "izlendi" olarak işaretlenir ve baştan başlar. İlk 10 saniyede kapatılan videolar hiç kaydedilmez.
-- Kapsam dışı olanlar:
-  - 90 saniyeden kısa videolar
-  - canlı yayınlar
-  - Shorts
-  - fareyle üzerine gelince oynayan önizlemeler
-  - YouTube Music
-  - gömülü videolar
-- Arama sonuçlarında, önerilerde ve kanal sayfalarında küçük resimlerin altında kehribar renkli bir ilerleme çubuğu gösterilir. Bitirdiğin videolarda çubuk tam doludur ve "✓ İzlendi" etiketi çıkar.
-- İzlendi olarak işaretli bir video tekrar açılınca baştan başlar. İlk birkaç saniyede kapatırsan işaret korunur. 10 saniyeyi geçersen video yeniden "yarım" sayılır.
-- Reklam oynarken konum kaydedilmez ve ileri sarma yapılmaz.
-- Eklenti gizli pencerelerde çalışmaz.
-- 90 gündür açılmayan videoların kayıtları silinir.
+[Install from Firefox Add-ons](https://addons.mozilla.org/firefox/addon/resume-position-for-youtube/) · [Türkçe](README.tr.md)
 
-## Ayarlar
-Araç çubuğundaki eklenti düğmesi ya da about:addons → eklenti → Seçenekler (yeni sekmede açılır). Değişiklikler hemen uygulanır; yukarıdaki süreler varsayılanlardır.
-- Konumları sakla: 30 gün, 90 gün, 6 ay, 1 yıl, süresiz. Kısaltınca eski kayıtlar onay alınarak hemen silinir.
-- Hatırlanacak en kısa video: 1, 1,5, 3, 5, 10 dk.
-- İzlendi sayılsın: otomatik (son %5, 10–30 sn) ya da sona 10 sn, 30 sn, 1 dk, 2 dk kala. Sabit değer videonun en fazla beşte biri kadar olabilir.
-- Devam bildirimi açık/kapalı; küçük resim işaretleri açık/kapalı ve çubuk rengi.
-- Kayıt sayısı, yedeği indir (JSON), yedekten geri yükle (her video için daha yeni kayıt kazanır, ayarlar da alınır), tümünü sil.
-- Videolar listesi: başlık ve kanal adıyla, en son izlenen üstte; arama, videoyu açma ve tek tek silme (geri alınabilir). Başlık ve kanal adı 1.3.0'dan itibaren kaydedilir; daha eski kayıtlarda video tekrar izlenince görünür.
+YouTube only remembers your playback position when watch history is on. If you keep history off for privacy, every video starts from 0:00 again. This add-on remembers the position locally, in your browser, and nowhere else.
 
-## Geliştirme
-    npm test            # mantık testleri (Node)
-    npx web-ext lint
-    npx web-ext run --start-url https://www.youtube.com
-    FIREFOX_BIN=/path/to/firefox npm run e2e   # gerçek YouTube üzerinde 17 senaryo
+![Resuming a video with a Start over button](amo/screenshot-1.png)
 
-Mağaza sayfası: https://addons.mozilla.org/firefox/addon/resume-position-for-youtube/
+## Features
 
-Yeni sürüm yayınlamak için listelenen (listed) kanala gönderilir.
-Bunun için gereken anahtarlar addons.mozilla.org > Developer Hub > Manage API Keys sayfasından alınır.
+- **Resume where you left off.** Reopen a video from anywhere (home, search, recommendations, a link) and it continues from the saved point. A short notice shows the time, with a **Start over** button.
+- **Progress on thumbnails.** Search results, recommendations and channel pages show a progress bar on videos you started and a **Watched** badge on the ones you finished.
+- **Finished videos start over.** A video closed near its end counts as watched and starts from the beginning next time.
+- **Links with a time win.** `&t=` / `#t=` links play from the time in the link.
+- **Your saved videos, listed.** The settings page lists saved videos by title and channel, with search, and lets you delete one or all of them.
+- **Settings:** how long positions are kept (30 days to forever), the shortest video to remember, when a video counts as watched, the resume notice, thumbnail marks and their color.
+- **Backup and restore** as a plain JSON file, for example to move to another computer.
+- In English, Turkish, German, French, Spanish, Portuguese and Russian.
 
-    WEB_EXT_API_KEY=... WEB_EXT_API_SECRET=... npm run sign
+It leaves alone: ads, hover previews, live streams, Shorts, short videos (under 90 s by default), YouTube Music, embedded players and private windows.
 
-Her imzalamadan önce `manifest.json` içindeki `version` artırılmalı. Mağaza metinleri `amo/metadata.json` dosyasında
-(sürüm notları `--amo-metadata amo/metadata.json` ile gider; özet ve açıklama için `node amo/listing.mjs meta`).
-Ekran görüntüleri: `node amo/listing.mjs info | add-preview <png> <sıra> [en] [tr] | delete-preview <id>`.
+![Progress bars and Watched badges on thumbnails](amo/screenshot-2.png)
+
+## Privacy
+
+- Positions (video ID, title, channel name, time, duration) are stored in the add-on's local storage (`storage.local`) on your computer.
+- The add-on makes **no network requests**: no analytics, no sync, no account, no remote code.
+- Entries you haven't opened for 90 days are deleted (adjustable). Uninstalling the add-on deletes everything.
+- Permissions: `storage` and access to `www.youtube.com` only.
+
+## Frequently asked
+
+**Does it work with watch history paused?** Yes, that is what it is for. It doesn't read or change your YouTube history.
+
+**Does it sync between computers?** No, on purpose. Use *Download backup* and *Restore from backup* to move positions.
+
+**Chrome?** Not yet; it is built and tested for Firefox (140+).
+
+## Development
+
+```sh
+npm install
+npm test                                   # decision logic (Node)
+npm run lint                               # web-ext lint
+npm start                                  # web-ext run on youtube.com
+FIREFOX_BIN=/path/to/firefox npm run e2e   # 17 scenarios against real YouTube
+npm run build                              # package into web-ext-artifacts/
+```
+
+Code layout:
+
+| File | Role |
+|---|---|
+| `src/page.js` | Runs in the page; watches the YouTube player, saves and restores the position. |
+| `src/bridge.js` | Content script that owns storage and answers `page.js`. |
+| `src/thumbs.js`, `src/thumbs.css` | Progress bars and Watched badges on thumbnails. |
+| `src/logic.js` | Pure decision logic, shared by all scripts and the tests. |
+| `src/background.js` | Toolbar button opens the settings page. |
+| `options/` | Settings page. |
+| `amo/` | Store listing text, screenshots and a script for the AMO API. |
+
+Bug reports and ideas: [issues](https://github.com/aliyusufergin/resume-position-for-youtube/issues).
+
+## License
+
+[MIT](LICENSE)

@@ -19,6 +19,11 @@
   const STRINGS = {
     en: { resumed: "Resumed at ", restart: "Start over" },
     tr: { resumed: "Kaldığın yerden devam: ", restart: "Baştan başlat" },
+    de: { resumed: "Fortgesetzt bei ", restart: "Von vorn" },
+    fr: { resumed: "Reprise à ", restart: "Recommencer" },
+    es: { resumed: "Reanudado en ", restart: "Empezar de nuevo" },
+    pt: { resumed: "Retomado em ", restart: "Começar do início" },
+    ru: { resumed: "Продолжено с ", restart: "Сначала" },
   };
   const T = STRINGS[(navigator.language || "en").slice(0, 2).toLowerCase()] || STRINGS.en;
   const NEAR_S = 10;

@@ -81,5 +81,5 @@ Use a real Firefox (`web-ext run`) and cover these scenarios:
 - Toolbar button (`action`, no popup): `src/background.js` (event page) opens the options page on click. `theme_icons` gives static black/white SVGs (`light` = icon for dark themes). New Firefox puts the button in the Extensions (puzzle) menu until the user pins it. Headless tests can't click it.
 
 ## Next release (todo)
-- Ship 1.3.1 with the package cleanup (no error.png). Only when the user says "gönder".
-- Same time: `node amo/listing.mjs meta` to add the GitHub repo as homepage and the issues page as support link (already in amo/metadata.json; costs one AMO write).
+- 1.3.1 is ready locally: package cleanup (no error.png), UI in de/fr/es/pt/ru (options/strings.js; page.js and thumbs.js have their own short tables). Send only when the user says "gönder".
+- Same time: `node amo/listing.mjs meta`. It pushes the new summary, the description in 7 locales (AMO codes: de, fr, es-ES, pt-BR, ru, tr, en-US), tags (youtube, privacy, streaming; AMO only allows tags from its fixed list), and the GitHub homepage/support links. One AMO write.

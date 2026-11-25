@@ -12,7 +12,7 @@
   const SKIP_SELECTOR = "yt-collection-thumbnail-view-model";
   // --------------------------------------------------------
 
-  const WATCHED = { tr: "İzlendi" }[(navigator.language || "en").slice(0, 2).toLowerCase()] || "Watched";
+  const WATCHED = { tr: "İzlendi", de: "Gesehen", fr: "Vue", es: "Visto", pt: "Assistido", ru: "Просмотрено" }[(navigator.language || "en").slice(0, 2).toLowerCase()] || "Watched";
   const entries = new Map(); // videoId -> stored entry
   let cfg = L.DEFAULTS;
 

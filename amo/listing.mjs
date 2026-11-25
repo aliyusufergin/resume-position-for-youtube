@@ -1,7 +1,7 @@
 // Manage the AMO listing through the v5 API. Reads WEB_EXT_API_KEY / WEB_EXT_API_SECRET from env.
 //   node amo/listing.mjs info                                  status, previews
 //   node amo/listing.mjs versions                              latest versions and their review status
-//   node amo/listing.mjs meta                                  push summary + description from amo/metadata.json
+//   node amo/listing.mjs meta                                  push summary, description, homepage, support_url from amo/metadata.json
 //   node amo/listing.mjs add-preview <png> <position> [caption-en] [caption-tr]
 //   node amo/listing.mjs edit-preview <id> <position> [caption-en] [caption-tr]
 //   node amo/listing.mjs delete-preview <id>
@@ -45,8 +45,11 @@ if (cmd === "info") {
   for (const x of v.results.slice(0, 6)) console.log(x.version, x.channel, x.file?.status, x.is_disabled ? "disabled" : "");
 } else if (cmd === "meta") {
   const m = JSON.parse(readFileSync(new URL("metadata.json", import.meta.url), "utf8"));
-  await call("PATCH", "/", { summary: m.summary, description: m.description });
-  console.log("summary and description updated");
+  const body = { summary: m.summary, description: m.description };
+  if (m.homepage) body.homepage = m.homepage;
+  if (m.support_url) body.support_url = m.support_url;
+  await call("PATCH", "/", body);
+  console.log("listing updated:", Object.keys(body).join(", "));
 } else if (cmd === "add-preview") {
   const [file, position, capEn, capTr] = args;
   const fd = new FormData();

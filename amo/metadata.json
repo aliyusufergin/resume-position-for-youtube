@@ -16,5 +16,11 @@
       "en-US": "Saved videos are now listed by title in the options page, with search and a Delete button for each (with undo). Titles are stored for videos you watch from now on. Also: a new icon with no background that turns white in dark themes, and a simpler black-and-white settings page. The toolbar button now opens the settings.",
       "tr": "Kayıtlı videolar artık seçenekler sayfasında başlıklarıyla listeleniyor; arama ve her biri için geri alınabilir Sil düğmesi var. Başlıklar bundan sonra izlediğin videolar için kaydediliyor. Ayrıca: arka planı olmayan, koyu temada beyaza dönen yeni simge ve daha sade, siyah beyaz ayarlar sayfası. Araç çubuğundaki düğme artık ayarları açıyor."
     }
+  },
+  "homepage": {
+    "en-US": "https://github.com/aliyusufergin/resume-position-for-youtube"
+  },
+  "support_url": {
+    "en-US": "https://github.com/aliyusufergin/resume-position-for-youtube/issues"
   }
 }

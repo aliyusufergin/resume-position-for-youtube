@@ -116,7 +116,7 @@ try {
   const pollution = [];
   for (const h of hovered) { const v = await getSaved(h.id); if (v) pollution.push({ ...h, v }); }
   check("hover previews not saved", hovered.length > 0 && pollution.length === 0, { hovered, pollution });
-} catch (e) { console.log("ERROR", e.message); await page.screenshot({ path: "error.png" }); }
+} catch (e) { console.log("ERROR", e.message); await page.screenshot({ path: new URL("error.png", import.meta.url).pathname }); }
 finally {
   console.log(`\n${results.filter((r) => r.ok).length}/${results.length} passed`);
   await browser.close();

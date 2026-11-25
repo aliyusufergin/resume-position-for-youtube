@@ -63,11 +63,12 @@ Use a real Firefox (`web-ext run`) and cover these scenarios:
 - the miniplayer
 
 ## AMO (2026-11-20)
-- Add-on is listed: slug `resume-position-for-youtube`, guid `@yt-resume-local`. 1.0.0 was unlisted; listed releases start at 1.0.1.
+- Add-on is listed: slug `resume-position-for-youtube`, guid `@yt-resume-local`. Source: https://github.com/aliyusufergin/resume-position-for-youtube (public, MIT). 1.0.0 was unlisted; listed releases start at 1.0.1.
 - `web-ext sign` approval for a listed submission can take longer than its 15 min wait. The timeout isn't an error; the submission is still in the queue.
 - web-ext cannot upload screenshots, and for an existing add-on it only sends the version's release notes. `amo/listing.mjs` (AMO v5 API with a JWT) pushes summary/description and manages previews; captions and position go in a JSON PATCH after the upload.
 - An add-on first created as unlisted gets a random-hex slug. Fix it with a `slug` PATCH.
 - AMO shows the description as plain text: HTML like `<b>` is escaped and appears literally. Use plain lines and • bullets.
+- `error.png` (an e2e failure screenshot) was shipped inside every package from 1.1.0 to 1.3.0 because the build ignore list missed it; e2e now writes it under test/e2e/. Check the package contents (`npm run build`, list the zip) before a release.
 - AMO throttles API writes hard: after a few uploads (versions, previews, PATCHes) it answers 429 "available in N seconds", from minutes up to ~22 h. `listing.mjs` waits and retries; for `web-ext sign` wait the given time and resubmit. Batch listing changes rather than sending them one by one.
 
 ## Settings (1.2.0)

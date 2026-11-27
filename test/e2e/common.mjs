@@ -1,10 +1,22 @@
-// Browser scenarios against real YouTube. Needs Firefox 140+: FIREFOX_BIN=/path/to/firefox npm run e2e
+// Browser scenarios against real YouTube.
+//   Firefox 140+: FIREFOX_BIN=/path/to/firefox npm run e2e
+//   Chrome 111+:  node chrome/build.mjs && CHROME_BIN=/path/to/chrome npm run e2e   (tests dist/chrome)
 import puppeteer from "puppeteer-core";
-const EXT = new URL("../..", import.meta.url).pathname;
+const CHROME = !!process.env.CHROME_BIN;
+const EXT = new URL(CHROME ? "../../dist/chrome" : "../..", import.meta.url).pathname;
 export const VIDEO = "aqz-KE-bpKQ"; // Big Buck Bunny, ~10 min
 export const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 export async function launch() {
-  const browser = await puppeteer.launch({
+  const browser = await puppeteer.launch(CHROME ? {
+    browser: "chrome",
+    executablePath: process.env.CHROME_BIN,
+    headless: true,
+    enableExtensions: true,
+    pipe: true,
+    env: { ...process.env },
+    args: ["--autoplay-policy=no-user-gesture-required", "--lang=en-US", "--no-sandbox"],
+    protocolTimeout: 120000,
+  } : {
     browser: "firefox",
     executablePath: process.env.FIREFOX_BIN || "firefox",
     headless: true,

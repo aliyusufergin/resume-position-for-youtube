@@ -3,3 +3,4 @@ web-ext-artifacts/
 .env
 .amo-upload-uuid
 test/e2e/error.png
+dist/

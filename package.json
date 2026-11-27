@@ -3,11 +3,12 @@
   "private": true,
   "scripts": {
     "test": "node --test test/*.test.js",
-    "lint": "web-ext lint --ignore-files web-ext-artifacts test package.json package-lock.json CLAUDE.md README.md README.tr.md amo LICENSE",
-    "start": "web-ext run --start-url https://www.youtube.com --ignore-files web-ext-artifacts test package.json package-lock.json CLAUDE.md README.md README.tr.md amo LICENSE",
+    "lint": "web-ext lint --ignore-files web-ext-artifacts test package.json package-lock.json CLAUDE.md README.md README.tr.md amo chrome dist LICENSE",
+    "start": "web-ext run --start-url https://www.youtube.com --ignore-files web-ext-artifacts test package.json package-lock.json CLAUDE.md README.md README.tr.md amo chrome dist LICENSE",
     "e2e": "node test/e2e/scenarios.mjs",
-    "build": "web-ext build --overwrite-dest --ignore-files web-ext-artifacts test package.json package-lock.json CLAUDE.md README.md README.tr.md amo LICENSE",
-    "sign": "web-ext sign --channel=listed --ignore-files web-ext-artifacts test package.json package-lock.json CLAUDE.md README.md README.tr.md amo LICENSE"
+    "build:chrome": "node chrome/build.mjs",
+    "build": "web-ext build --overwrite-dest --ignore-files web-ext-artifacts test package.json package-lock.json CLAUDE.md README.md README.tr.md amo chrome dist LICENSE",
+    "sign": "web-ext sign --channel=listed --ignore-files web-ext-artifacts test package.json package-lock.json CLAUDE.md README.md README.tr.md amo chrome dist LICENSE"
   },
   "devDependencies": {
     "puppeteer-core": "^24.0.0",

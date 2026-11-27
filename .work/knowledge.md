@@ -82,3 +82,14 @@ Use a real Firefox (`web-ext run`) and cover these scenarios:
 
 ## Releases
 - 2026-11-25: 1.3.1 submitted (5 new UI languages, package cleanup); listing updated with 7-locale text, tags and GitHub links.
+
+## Chrome build (2026-11-28)
+- Firefox stays the source of truth; `node chrome/build.mjs` (npm run build:chrome) writes `dist/chrome/` and `web-ext-artifacts/resume_position_for_youtube-chrome-<version>.zip`. Chrome-only files live in `chrome/`.
+- Differences the build applies:
+  - `background.service_worker` instead of `background.scripts`.
+  - PNG icons, because Chrome does not accept SVG manifest icons, and there are no `theme_icons`. `chrome/theme.js` (in the isolated content script and on the options page) sends `{ytrDark}` and the worker calls `action.setIcon`. Icon paths in the worker must start with `/` (they resolve against `src/`).
+  - `src/compat.js` aliases `browser` to `chrome` (MV3 `chrome.*` returns promises).
+  - Chrome injects a file only once per frame, even across entries for different worlds, so the MAIN-world entry gets `src/logic-main.js`. Without it page.js fails with "YTResumeLogic is not defined".
+  - Manifest description shortened: the Chrome Web Store allows at most 132 characters.
+- Test: `npm run build:chrome && CHROME_BIN=... npm run e2e` (17/17 on Chrome for Testing 158). Puppeteer can open `chrome-extension://` pages, unlike Firefox BiDi.
+- Store texts, privacy answers and images: `chrome/store/`. Publishing needs the user's Chrome Web Store developer account (one-time fee); uploads go through the dashboard.

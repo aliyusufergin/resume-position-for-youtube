@@ -39,6 +39,10 @@ Araç çubuğundaki eklenti düğmesi ya da about:addons → eklenti → Seçene
     npx web-ext lint
     npx web-ext run --start-url https://www.youtube.com
     FIREFOX_BIN=/path/to/firefox npm run e2e   # gerçek YouTube üzerinde 17 senaryo
+    npm run build:chrome                       # Chrome paketi: dist/chrome/ ve web-ext-artifacts/ içinde zip
+    CHROME_BIN=/path/to/chrome npm run e2e     # aynı 17 senaryo Chrome'da (dist/chrome'u dener)
+
+Chrome sürümü aynı kaynaktan üretilir; Chrome'a özgü dosyalar ve mağaza metni `chrome/` klasöründe.
 
 Mağaza sayfası: https://addons.mozilla.org/firefox/addon/resume-position-for-youtube/
 

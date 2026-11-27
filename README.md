@@ -1,6 +1,6 @@
 # Resume Position for YouTube
 
-**A Firefox add-on that resumes YouTube videos where you left off, even with YouTube watch history turned off.**
+**A Firefox and Chrome extension that resumes YouTube videos where you left off, even with YouTube watch history turned off.**
 
 [Install from Firefox Add-ons](https://addons.mozilla.org/firefox/addon/resume-position-for-youtube/) · [Türkçe](README.tr.md)
 
@@ -36,7 +36,7 @@ It leaves alone: ads, hover previews, live streams, Shorts, short videos (under 
 
 **Does it sync between computers?** No, on purpose. Use *Download backup* and *Restore from backup* to move positions.
 
-**Chrome?** Not yet; it is built and tested for Firefox (140+).
+**Chrome?** Yes: the same code is packaged for Chrome (111+) by `npm run build:chrome`. The Chrome Web Store listing is in preparation.
 
 ## Development
 
@@ -47,7 +47,13 @@ npm run lint                               # web-ext lint
 npm start                                  # web-ext run on youtube.com
 FIREFOX_BIN=/path/to/firefox npm run e2e   # 17 scenarios against real YouTube
 npm run build                              # package into web-ext-artifacts/
+npm run build:chrome                       # Chrome package: dist/chrome/ and a zip in web-ext-artifacts/
+CHROME_BIN=/path/to/chrome npm run e2e     # the same 17 scenarios in Chrome (tests dist/chrome)
 ```
+
+Firefox is the source of truth. `chrome/build.mjs` copies the sources and adapts them for Chrome: a service worker
+instead of an event page, PNG icons that follow the browser's light or dark mode, a `browser` alias for `chrome`, and a
+separate copy of `logic.js` for the page world (Chrome injects a file only once per frame).
 
 Code layout:
 
@@ -60,6 +66,7 @@ Code layout:
 | `src/background.js` | Toolbar button opens the settings page. |
 | `options/` | Settings page. |
 | `amo/` | Store listing text, screenshots and a script for the AMO API. |
+| `chrome/` | Chrome build script, Chrome-only files and Chrome Web Store listing. |
 
 Bug reports and ideas: [issues](https://github.com/aliyusufergin/resume-position-for-youtube/issues).
 
